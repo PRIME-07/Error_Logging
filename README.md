@@ -22,5 +22,7 @@ This will launch a Streamlit interface where you can:
 - Extract and combine unique errors from all files.
 - Download the consolidated file containing only the unique errors.
 
+To terminate the streamlit session press <kbd>⌃ Control</kbd> + <kbd>C</kbd>.
+
 ### Output
 The output will be available as a downloadable .txt file.
