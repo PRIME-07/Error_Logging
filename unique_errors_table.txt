@@ -1,0 +1,19 @@
+errors_file1.txt
+Operation not supported: [1007]
+Invalid input: [1010]
+Permission denied: [1009]
+Connection refused: [1006]
+Unknown host: [1002]
+Internal server error: [1005]
+Segmentation fault: [1003]
+Access denied: [1011]
+Protocol error: [1001]
+Timeout occurred: [1004]
+Division by zero: [1008]
+
+errors_file2.txt
+Stack overflow: [1014]
+Disk full: [1015]
+Network unreachable: [1012]
+Index out of range: [1013]
+

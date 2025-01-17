@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import pandas as pd
 
 # Function to load file and return a set of errors
 def load_file(file):
@@ -9,6 +10,7 @@ def load_file(file):
 def process_files(uploaded_files):
     errors = set()
     errorcount = 0
+    file_errors = {}  # Dictionary to hold unique errors for each file
 
     for uploaded_file in uploaded_files:
         # Read the file content
@@ -18,8 +20,11 @@ def process_files(uploaded_files):
         unique_errors = error_logs - errors
         errors.update(unique_errors)
         errorcount += len(unique_errors)
+
+        # Store unique errors for the current file
+        file_errors[uploaded_file.name] = unique_errors
     
-    return errors, errorcount
+    return errors, errorcount, file_errors  # Return the file_errors dictionary
 
 # Streamlit interface
 st.title("Unique Error Logs Extractor")
@@ -31,33 +36,27 @@ uploaded_files = st.file_uploader("Choose error log files", accept_multiple_file
 
 if uploaded_files:
     # Process the files to get unique errors
-    errors, errorcount = process_files(uploaded_files)
+    errors, errorcount, file_errors = process_files(uploaded_files)
 
     # Show the result
-    st.write(f"Total unique errors found: {errorcount}")
+    st.write(f"Total unique errors found: {errorcount} across {len(file_errors)} files.")
     
     # Convert the set to a sorted list before displaying it
     sorted_errors = sorted(errors)
 
-    # Ensure all items are strings before joining (decode if bytes)
-    sorted_errors_str = [error.decode('utf-8') if isinstance(error, bytes) else str(error) for error in sorted_errors]
-
-    # Display the unique errors in the text area
-    st.text_area("Unique Errors", "\n".join(sorted_errors_str), height=300)
+    # Display a table with unique errors in rows and file names in columns
+    st.write("Unique Errors by File:")
+    unique_errors_table = {file_name: list(errors) for file_name, errors in file_errors.items()}
+    
 
     # Button to download the unique errors as a text file
     if st.button('Download Unique Errors'):
-        with open("unique_errors.txt", "w") as f:
-            for error in sorted_errors_str:
-                f.write(error + "\n")
-        
-        # Provide download link for the unique errors file
-        with open("unique_errors.txt", "rb") as f:
-            st.download_button(
-                label="Download unique_errors.txt",
-                data=f,
-                file_name="unique_errors.txt",
-                mime="text/plain"
-            )
+        # Create a text file with the desired format
+        with open("unique_errors_table.txt", "w") as f:  # Open the file for writing
+            for file_name, errors in unique_errors_table.items():
+                f.write(f"{file_name}\n")  # Write the filename
+                for error in errors:
+                    f.write(f"{error.decode('utf-8')}\n")  # Decode each byte string to a regular string
+                f.write("\n")  # Add a newline for separation between files
 else:
     st.write("Please upload some error log files to proceed.")
